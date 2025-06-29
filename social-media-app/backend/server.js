@@ -25,6 +25,10 @@ mongoose.connect(process.env.MONGO_URI, {
   .then(() => console.log("✅ MongoDB Connected"))
   .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
+app.get("/", (req, res) => {
+  res.send("you are live");
+});
+
 // Routes
 app.use("/api/auth", userRouter);
 app.use("/api/posts", postRouter);
