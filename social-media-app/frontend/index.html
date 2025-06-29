@@ -3,137 +3,156 @@
   <head>
     <meta charset="UTF-8" />
     <title>Mini Social App</title>
-   <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f0f0f0;
-    padding: 20px;
-  }
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f0f0f0;
+        padding: 20px;
+        box-sizing: border-box;
+      }
 
-  h1 {
-    text-align: center;
-    color: #2c3e50;
-    font-size: 2rem;
-  }
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+        font-size: 2rem;
+        margin-bottom: 20px;
+      }
 
-  .container {
-    max-width: 700px;
-    margin: auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  }
+      .container {
+        max-width: 700px;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
 
-  input,
-  textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-  }
+      input,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        font-size: 1rem;
+      }
 
-  button {
-    background: #2ecc71;
-    border: none;
-    padding: 10px 15px;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
-  }
+      button {
+        background: #2ecc71;
+        border: none;
+        padding: 10px 15px;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: background-color 0.3s;
+      }
 
-  button:hover {
-    background: #27ae60;
-  }
+      button:hover {
+        background: #27ae60;
+      }
 
-  .post {
-    border: 1px solid #ddd;
-    background: #fafafa;
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 8px;
-  }
+      .post {
+        border: 1px solid #ddd;
+        background: #fafafa;
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 1rem;
+      }
 
-  .post img {
-    max-width: 100%;
-    margin-top: 10px;
-    border-radius: 8px;
-  }
+      .post img {
+        max-width: 100%;
+        margin-top: 10px;
+        border-radius: 8px;
+        max-height: 300px;
+        object-fit: contain;
+      }
 
-  .comments {
-    margin-top: 10px;
-    padding-left: 15px;
-    border-left: 2px solid #ccc;
-    font-size: 0.9em;
-  }
+      .comments {
+        margin-top: 10px;
+        padding-left: 15px;
+        border-left: 2px solid #ccc;
+        font-size: 0.9em;
+      }
 
-  .comment {
-    margin: 5px 0;
-  }
+      .comment {
+        margin: 5px 0;
+      }
 
-  .comment-input {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-  }
+      .comment-input {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+      }
 
-  .comment-input input {
-    flex: 1;
-  }
+      .comment-input input {
+        flex: 1;
+        padding: 8px;
+        font-size: 1rem;
+      }
 
-  /* 📱 Mobile Devices */
-  @media (max-width: 480px) {
-    body {
-      padding: 10px;
-    }
+      /* Delete buttons style */
+      .delete-btn {
+        background: #e74c3c;
+        margin-left: 10px;
+      }
 
-    h1 {
-      font-size: 1.5rem;
-    }
+      .delete-btn:hover {
+        background: #c0392b;
+      }
 
-    .container {
-      padding: 15px;
-    }
+      /* Responsive adjustments */
+      @media (max-width: 480px) {
+        body {
+          padding: 8px;
+        }
 
-    button {
-      width: 100%;
-      margin-top: 5px;
-    }
+        h1 {
+          font-size: 1.3rem;
+          margin-bottom: 15px;
+        }
 
-    .comment-input {
-      flex-direction: column;
-    }
+        .container {
+          padding: 15px;
+          border-radius: 8px;
+        }
 
-    .comment-input button {
-      width: 100%;
-    }
-  }
+        input,
+        textarea {
+          font-size: 0.95rem;
+          padding: 8px;
+        }
 
-  /* 📱📲 Small Tablets */
-  @media (min-width: 481px) and (max-width: 768px) {
-    .container {
-      padding: 18px;
-    }
+        button {
+          font-size: 0.9rem;
+          padding: 8px 12px;
+          width: 100%;
+          margin: 4px 0;
+        }
 
-    h1 {
-      font-size: 1.8rem;
-    }
+        .comment-input {
+          flex-direction: column;
+          gap: 5px;
+        }
 
-    button {
-      padding: 10px 12px;
-    }
-  }
+        .post {
+          font-size: 0.95rem;
+          padding: 12px;
+        }
 
-  /* 💻 Larger Screens (no changes needed, but reserved for future adjustments) */
-  @media (min-width: 1024px) {
-    .container {
-      padding: 25px;
-    }
-  }
-</style>
+        .comments {
+          font-size: 0.85rem;
+          padding-left: 10px;
+        }
 
+        .post img {
+          max-height: 200px;
+          object-fit: cover;
+        }
+      }
+    </style>
   </head>
   <body>
     <h1>Mini Social App</h1>
@@ -154,7 +173,7 @@
         ></textarea>
         <input type="file" id="postImage" />
         <button onclick="addPost()">Post</button>
-        <button onclick="logout()" style="background: #e74c3c">Logout</button>
+        <button onclick="logout()" class="delete-btn">Logout</button>
       </div>
 
       <div id="posts"></div>
@@ -163,6 +182,7 @@
     <script>
       const API = "https://social-media-app-5-j2kt.onrender.com/api";
 
+      // Register user
       async function register() {
         const username = document.getElementById("username").value.trim();
         const password = document.getElementById("password").value.trim();
@@ -180,6 +200,7 @@
         alert("Registered: " + data.username);
       }
 
+      // Login user
       async function login() {
         const username = document.getElementById("username").value.trim();
         const password = document.getElementById("password").value.trim();
@@ -200,6 +221,7 @@
         loadPosts();
       }
 
+      // Logout user
       function logout() {
         localStorage.removeItem("user");
         alert("Logged out");
@@ -207,6 +229,7 @@
         document.getElementById("posts").innerHTML = "";
       }
 
+      // Toggle post section vs auth section visibility
       function showPostSection(show) {
         document.getElementById("post-section").style.display = show
           ? "block"
@@ -216,6 +239,7 @@
           : "block";
       }
 
+      // Add post (with optional image), then update DOM immediately
       async function addPost() {
         const user = JSON.parse(localStorage.getItem("user"));
         if (!user) return alert("Please log in");
@@ -234,14 +258,50 @@
           body: formData,
         });
 
-        const data = await res.json();
-        if (data.error) return alert("Post error: " + data.error);
+        const post = await res.json();
+        if (post.error) return alert("Post error: " + post.error);
 
+        // Clear inputs
         document.getElementById("postContent").value = "";
         document.getElementById("postImage").value = null;
-        loadPosts();
+
+        // Add post to top of list without full reload
+        prependPost(post, user);
       }
 
+      // Prepend a post DOM element
+      function prependPost(p, user) {
+        const container = document.getElementById("posts");
+        const liked = p.likes?.includes(user?._id);
+        const div = document.createElement("div");
+        div.className = "post";
+        div.innerHTML = `
+          <strong>${user.username}</strong>: ${p.content}
+          ${
+            p.image
+              ? `<br><img src="https://social-media-app-5-j2kt.onrender.com/uploads/${p.image}">`
+              : ""
+          }
+          <div>
+            <button onclick="toggleLike('${p._id}')">${
+          liked ? "❤️ Unlike" : "🤍 Like"
+        } (0)</button>
+            <button onclick="deletePost('${
+              p._id
+            }')" class="delete-btn">🗑️ Delete</button>
+          </div>
+          <div class="comments" id="comments-${p._id}"></div>
+          <div class="comment-input">
+            <input type="text" id="comment-input-${
+              p._id
+            }" placeholder="Write a comment..." />
+            <button onclick="addComment('${p._id}')">Comment</button>
+          </div>
+        `;
+        container.prepend(div);
+      }
+
+      // Load all posts from backend and render
       async function loadPosts() {
         const user = JSON.parse(localStorage.getItem("user"));
         const res = await fetch(`${API}/posts`);
@@ -251,7 +311,7 @@
         container.innerHTML = "";
 
         posts.forEach((p) => {
-          const liked = p.likes.includes(user?._id);
+          const liked = p.likes?.includes(user?._id);
           const div = document.createElement("div");
           div.className = "post";
           div.innerHTML = `
@@ -267,7 +327,7 @@
           } (${p.likes.length})</button>
             ${
               user && user._id === p.author._id
-                ? `<button onclick="deletePost('${p._id}')" style="background:#e74c3c;margin-left:10px">🗑️ Delete</button>`
+                ? `<button onclick="deletePost('${p._id}')" class="delete-btn">🗑️ Delete</button>`
                 : ""
             }
           </div>
@@ -284,6 +344,7 @@
         });
       }
 
+      // Toggle like / unlike
       async function toggleLike(postId) {
         const user = JSON.parse(localStorage.getItem("user"));
         if (!user) return alert("Log in to like");
@@ -299,6 +360,7 @@
         loadPosts();
       }
 
+      // Delete a post
       async function deletePost(postId) {
         if (!confirm("Delete this post?")) return;
 
@@ -311,6 +373,7 @@
         loadPosts();
       }
 
+      // Add comment to post
       async function addComment(postId) {
         const user = JSON.parse(localStorage.getItem("user"));
         if (!user) return alert("Log in to comment");
@@ -332,6 +395,7 @@
         loadComments(postId);
       }
 
+      // Load comments for a post
       async function loadComments(postId) {
         const user = JSON.parse(localStorage.getItem("user"));
         const res = await fetch(`${API}/comments/post/${postId}`);
@@ -355,6 +419,7 @@
         });
       }
 
+      // Delete a comment
       async function deleteComment(commentId, postId) {
         if (!confirm("Delete comment?")) return;
         const res = await fetch(`${API}/comments/${commentId}`, {
@@ -365,6 +430,7 @@
         loadComments(postId);
       }
 
+      // On page load, check if user is logged in
       if (localStorage.getItem("user")) {
         showPostSection(true);
         loadPosts();
