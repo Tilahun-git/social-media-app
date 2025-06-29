@@ -1,4 +1,3 @@
-// routes/posts.js
 import express from "express";
 import Post from "../models/Post.js";
 import multer from "multer";
@@ -22,7 +21,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Create post with image
+// ✅ Create post with optional image
 postRouter.post("/", upload.single("image"), async (req, res) => {
   try {
     const post = await Post.create({
@@ -36,18 +35,55 @@ postRouter.post("/", upload.single("image"), async (req, res) => {
   }
 });
 
+// ✅ Get all posts
 postRouter.get("/", async (req, res) => {
-  const posts = await Post.find()
-    .populate("author", "username")
-    .sort({ createdAt: -1 });
-  res.json(posts);
+  try {
+    const posts = await Post.find()
+      .populate("author", "username")
+      .sort({ createdAt: -1 });
+    res.json(posts);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
+// ✅ Like/Dislike toggle
 postRouter.put("/:id/like", async (req, res) => {
-  const post = await Post.findById(req.params.id);
-  post.likes.push(req.body.userId);
-  await post.save();
-  res.json(post);
+  try {
+    const post = await Post.findById(req.params.id);
+    const userId = req.body.userId;
+
+    if (!post.likes.includes(userId)) {
+      post.likes.push(userId); // Like
+    } else {
+      post.likes = post.likes.filter((id) => id !== userId); // Dislike (remove like)
+    }
+
+    await post.save();
+    res.json(post);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ✅ Delete post
+postRouter.delete("/:id", async (req, res) => {
+  try {
+    const post = await Post.findByIdAndDelete(req.params.id);
+    if (!post) return res.status(404).json({ error: "Post not found" });
+
+    // Delete associated image from uploads (if exists)
+    if (post.image) {
+      const imagePath = path.resolve("uploads", post.image);
+      fs.unlink(imagePath, (err) => {
+        if (err) console.warn("Image delete failed:", err.message);
+      });
+    }
+
+    res.json({ message: "Post deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 export default postRouter;
