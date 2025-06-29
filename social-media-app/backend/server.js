@@ -1,35 +1,45 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import dotenv from 'dotenv';
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import dotenv from "dotenv";
 
-import userRouter from './routes/auth.js';
-import postRouter from './routes/posts.js';
-import commentRouter from './routes/comments.js';
-import followRouter from './routes/follows.js';
+import userRouter from "./routes/auth.js";
+import postRouter from "./routes/posts.js";
+import commentRouter from "./routes/comments.js";
+import followRouter from "./routes/follows.js";
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// CORS configuration
+app.use(
+  cors({
+    origin: "https://social-media-app-6-ls9a.onrender.com/", // For production, replace "*" with your frontend URL, e.g. "https://your-frontend.onrender.com"
+  })
+);
+
 app.use(express.json());
+
+// Serve uploaded images statically
 app.use("/uploads", express.static("uploads"));
 
-
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch(err => console.error("❌ MongoDB Connection Error:", err));
-
+// Simple root endpoint
 app.get("/", (req, res) => {
-  res.send("you are live");
+  res.send("You are live");
 });
 
-// Routes
+// Connect to MongoDB
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
+
+// API Routes
 app.use("/api/auth", userRouter);
 app.use("/api/posts", postRouter);
 app.use("/api/comments", commentRouter);
