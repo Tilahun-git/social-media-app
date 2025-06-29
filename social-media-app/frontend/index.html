@@ -3,84 +3,137 @@
   <head>
     <meta charset="UTF-8" />
     <title>Mini Social App</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background: #f0f0f0;
-        padding: 20px;
-      }
+   <style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
+    padding: 20px;
+  }
 
-      h1 {
-        text-align: center;
-        color: #2c3e50;
-      }
+  h1 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 2rem;
+  }
 
-      .container {
-        max-width: 700px;
-        margin: auto;
-        background: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      }
+  .container {
+    max-width: 700px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
 
-      input,
-      textarea {
-        width: 100%;
-        padding: 10px;
-        margin: 10px 0;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-      }
+  input,
+  textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
 
-      button {
-        background: #2ecc71;
-        border: none;
-        padding: 10px 15px;
-        color: white;
-        cursor: pointer;
-        border-radius: 5px;
-      }
+  button {
+    background: #2ecc71;
+    border: none;
+    padding: 10px 15px;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+  }
 
-      button:hover {
-        background: #27ae60;
-      }
+  button:hover {
+    background: #27ae60;
+  }
 
-      .post {
-        border: 1px solid #ddd;
-        background: #fafafa;
-        margin-top: 20px;
-        padding: 15px;
-        border-radius: 8px;
-      }
+  .post {
+    border: 1px solid #ddd;
+    background: #fafafa;
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+  }
 
-      .post img {
-        max-width: 100%;
-        margin-top: 10px;
-        border-radius: 8px;
-      }
+  .post img {
+    max-width: 100%;
+    margin-top: 10px;
+    border-radius: 8px;
+  }
 
-      .comments {
-        margin-top: 10px;
-        padding-left: 15px;
-        border-left: 2px solid #ccc;
-        font-size: 0.9em;
-      }
+  .comments {
+    margin-top: 10px;
+    padding-left: 15px;
+    border-left: 2px solid #ccc;
+    font-size: 0.9em;
+  }
 
-      .comment {
-        margin: 5px 0;
-      }
+  .comment {
+    margin: 5px 0;
+  }
 
-      .comment-input {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
-      }
+  .comment-input {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
 
-      .comment-input input {
-        flex: 1;
-      }
-    </style>
+  .comment-input input {
+    flex: 1;
+  }
+
+  /* 📱 Mobile Devices */
+  @media (max-width: 480px) {
+    body {
+      padding: 10px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    .container {
+      padding: 15px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    .comment-input {
+      flex-direction: column;
+    }
+
+    .comment-input button {
+      width: 100%;
+    }
+  }
+
+  /* 📱📲 Small Tablets */
+  @media (min-width: 481px) and (max-width: 768px) {
+    .container {
+      padding: 18px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    button {
+      padding: 10px 12px;
+    }
+  }
+
+  /* 💻 Larger Screens (no changes needed, but reserved for future adjustments) */
+  @media (min-width: 1024px) {
+    .container {
+      padding: 25px;
+    }
+  }
+</style>
+
   </head>
   <body>
     <h1>Mini Social App</h1>
