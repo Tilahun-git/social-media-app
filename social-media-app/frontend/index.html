@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Mini Social App with Real-Time Chat</title>
+    <title>Mini Social App</title>
     <link rel="icon" href="/favicon.ico" />
     <style>
       body {
@@ -26,7 +26,6 @@
         padding: 20px;
         border-radius: 10px;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        margin-bottom: 40px; /* space for chat */
       }
 
       input,
@@ -105,63 +104,6 @@
         background: #c0392b;
       }
 
-      /* Chat box fixed at bottom */
-      #chat-container {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: #fff;
-        border-top: 1px solid #ccc;
-        max-width: 700px;
-        margin: auto;
-        width: 100%;
-        box-sizing: border-box;
-        padding: 10px;
-        border-radius: 10px 10px 0 0;
-        box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
-        font-size: 0.9rem;
-        z-index: 1000;
-      }
-
-      #chat-messages {
-        max-height: 150px;
-        overflow-y: auto;
-        border: 1px solid #ddd;
-        padding: 10px;
-        border-radius: 5px;
-        background: #fafafa;
-        margin-bottom: 8px;
-      }
-
-      #chat-input-container {
-        display: flex;
-        gap: 10px;
-      }
-
-      #chat-input {
-        flex: 1;
-        padding: 8px;
-        font-size: 1rem;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-      }
-
-      #chat-send-btn {
-        background: #3498db;
-        border: none;
-        padding: 10px 15px;
-        color: white;
-        cursor: pointer;
-        border-radius: 5px;
-        font-size: 1rem;
-        transition: background-color 0.3s;
-      }
-
-      #chat-send-btn:hover {
-        background: #2980b9;
-      }
-
       @media (max-width: 480px) {
         body {
           padding: 8px;
@@ -175,7 +117,6 @@
         .container {
           padding: 15px;
           border-radius: 8px;
-          margin-bottom: 140px;
         }
 
         input,
@@ -210,13 +151,6 @@
           max-height: 200px;
           object-fit: cover;
         }
-
-        #chat-container {
-          max-width: 100%;
-          border-radius: 0;
-          padding: 8px;
-          font-size: 0.8rem;
-        }
       }
     </style>
   </head>
@@ -245,27 +179,8 @@
       <div id="posts"></div>
     </div>
 
-    <!-- Chat container -->
-    <div id="chat-container" style="display: none">
-      <div id="chat-messages"></div>
-      <div id="chat-input-container">
-        <input type="text" id="chat-input" placeholder="Type a message..." />
-        <button id="chat-send-btn">Send</button>
-      </div>
-    </div>
-
-    <!-- Load Socket.IO client -->
-    <script
-      src="https://cdn.socket.io/4.6.1/socket.io.min.js"
-      integrity="sha384-/5sjyDCSjj+VRMqWW97HXVE/G+QqTFvlK7FYixhxmnCNPR8kZ0VzPyT6I8pAOXtq"
-      crossorigin="anonymous"
-    ></script>
-
     <script>
       const API = "https://social-media-app-5-j2kt.onrender.com/api";
-
-      // Socket.IO client instance
-      let socket;
 
       async function register() {
         const username = document.getElementById("username").value.trim();
@@ -298,26 +213,17 @@
 
         const data = await res.json();
         if (data.error) return alert("Login failed: " + data.error);
-
         localStorage.setItem("user", JSON.stringify(data));
         alert("Welcome, " + data.username);
         showPostSection(true);
         loadPosts();
-        initSocket(); // connect socket after login
-        showChat(true);
       }
 
       function logout() {
-        if (socket) {
-          socket.disconnect();
-          socket = null;
-        }
         localStorage.removeItem("user");
         alert("Logged out");
         showPostSection(false);
-        showChat(false);
         document.getElementById("posts").innerHTML = "";
-        document.getElementById("chat-messages").innerHTML = "";
       }
 
       function showPostSection(show) {
@@ -327,12 +233,6 @@
         document.getElementById("auth-section").style.display = show
           ? "none"
           : "block";
-      }
-
-      function showChat(show) {
-        document.getElementById("chat-container").style.display = show
-          ? "block"
-          : "none";
       }
 
       async function addPost() {
@@ -586,74 +486,9 @@
         });
       }
 
-      // ---------------- SOCKET.IO CHAT -----------------
-
-      function initSocket() {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (!user) return;
-
-        socket = io("https://social-media-app-5-j2kt.onrender.com");
-
-        socket.on("connect", () => {
-          // Tell server who we are
-          socket.emit("join", { userId: user._id, username: user.username });
-        });
-
-        socket.on("chatMessage", (msg) => {
-          addChatMessage(msg);
-        });
-
-        // Optional: Handle disconnect, reconnect, errors here
-      }
-
-      // Add chat message to chat box
-      function addChatMessage(msg) {
-        const container = document.getElementById("chat-messages");
-        const div = document.createElement("div");
-        div.textContent = `${msg.username}: ${msg.text}`;
-        container.appendChild(div);
-        container.scrollTop = container.scrollHeight;
-      }
-
-      // Send chat message to server
-      function sendChatMessage() {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (!user) {
-          alert("Please log in to chat");
-          return;
-        }
-        const input = document.getElementById("chat-input");
-        const text = input.value.trim();
-        if (!text) return;
-
-        const msg = {
-          userId: user._id,
-          username: user.username,
-          text,
-          timestamp: Date.now(),
-        };
-
-        socket.emit("chatMessage", msg);
-        input.value = "";
-        addChatMessage(msg); // show immediately
-      }
-
-      document
-        .getElementById("chat-send-btn")
-        .addEventListener("click", sendChatMessage);
-      document
-        .getElementById("chat-input")
-        .addEventListener("keypress", (e) => {
-          if (e.key === "Enter") sendChatMessage();
-        });
-
-      // -----------------------------------
-
       if (localStorage.getItem("user")) {
         showPostSection(true);
         loadPosts();
-        showChat(true);
-        initSocket();
       }
     </script>
   </body>
