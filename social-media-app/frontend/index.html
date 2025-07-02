@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <title>Mini Social App</title>
     <link rel="icon" href="/favicon.ico" />
-
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -70,6 +69,7 @@
         border-radius: 8px;
         max-height: 300px;
         object-fit: contain;
+        cursor: pointer;
       }
 
       .comments {
@@ -95,7 +95,6 @@
         font-size: 1rem;
       }
 
-      /* Delete buttons style */
       .delete-btn {
         background: #e74c3c;
         margin-left: 10px;
@@ -105,7 +104,6 @@
         background: #c0392b;
       }
 
-      /* Responsive adjustments */
       @media (max-width: 480px) {
         body {
           padding: 8px;
@@ -178,9 +176,7 @@
         <button onclick="logout()" class="delete-btn">Logout</button>
         <button onclick="toggleFollow()">Follow User</button>
       </div>
-      <div>
-        <input type="file" id="editImage" style="display: none" />
-      </div>
+
       <div id="posts"></div>
     </div>
 
@@ -276,7 +272,9 @@
           <strong>${user.username}</strong>: ${p.content}
           ${
             p.image
-              ? `<br><img src="${API.replace("/api", "")}/uploads/${p.image}">`
+              ? `<br><img src="${API.replace("/api", "")}/uploads/${
+                  p.image
+                }" onclick="editPost('${p._id}', \`${p.content}\`)">`
               : ""
           }
           <div>
@@ -316,7 +314,11 @@
               p.image
                 ? `<br><img src="${API.replace("/api", "")}/uploads/${
                     p.image
-                  }">`
+                  }" ${
+                    user._id === p.author._id
+                      ? `onclick="editPost('${p._id}', \`${p.content}\`)"`
+                      : ""
+                  }>`
                 : ""
             }
             <div>
@@ -324,7 +326,7 @@
             liked ? "❤️ Unlike" : "🤍 Like"
           } (${p.likes.length})</button>
               ${
-                user && user._id === p.author._id
+                user._id === p.author._id
                   ? `<button onclick="editPost('${p._id}', \`${p.content}\`)">✏️ Edit</button>
                      <button onclick="deletePost('${p._id}')" class="delete-btn">🗑️ Delete</button>`
                   : ""
@@ -343,19 +345,31 @@
         });
       }
 
-      async function toggleLike(postId) {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (!user) return alert("Log in to like");
+      async function editPost(postId, currentContent) {
+        const newContent = prompt("Edit your post:", currentContent);
+        if (newContent === null) return;
 
-        const res = await fetch(`${API}/posts/${postId}/like`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: user._id }),
-        });
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/*";
+        fileInput.onchange = async () => {
+          const formData = new FormData();
+          formData.append("content", newContent);
+          if (fileInput.files[0]) {
+            formData.append("image", fileInput.files[0]);
+          }
 
-        const data = await res.json();
-        if (data.error) return alert("Like error: " + data.error);
-        loadPosts();
+          const res = await fetch(`${API}/posts/${postId}`, {
+            method: "PUT",
+            body: formData,
+          });
+
+          const data = await res.json();
+          if (data.error) return alert("Edit failed: " + data.error);
+          loadPosts();
+        };
+
+        fileInput.click();
       }
 
       async function deletePost(postId) {
@@ -370,37 +384,19 @@
         loadPosts();
       }
 
-      async function editPost(postId, currentContent) {
-        const newContent = prompt("Edit your post:", currentContent);
-        if (!newContent) return;
+      async function toggleLike(postId) {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user) return alert("Log in to like");
 
-        // Create a temporary file input for selecting a new image
-        const fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.accept = "image/*";
+        const res = await fetch(`${API}/posts/${postId}/like`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: user._id }),
+        });
 
-        // Ask user to pick a file
-        fileInput.onchange = async () => {
-          const formData = new FormData();
-          formData.append("content", newContent);
-
-          const selectedImage = fileInput.files[0];
-          if (selectedImage) {
-            formData.append("image", selectedImage);
-          }
-
-          const res = await fetch(`${API}/posts/${postId}`, {
-            method: "PUT",
-            body: formData,
-          });
-
-          const data = await res.json();
-          if (data.error) return alert("Edit failed: " + data.error);
-          loadPosts();
-        };
-
-        // Trigger file picker (user can cancel)
-        fileInput.click();
+        const data = await res.json();
+        if (data.error) return alert("Like error: " + data.error);
+        loadPosts();
       }
 
       async function addComment(postId) {
@@ -425,7 +421,6 @@
       }
 
       async function loadComments(postId) {
-        const user = JSON.parse(localStorage.getItem("user"));
         const res = await fetch(`${API}/comments/post/${postId}`);
         const comments = await res.json();
 
@@ -435,57 +430,36 @@
         comments.forEach((c) => {
           const div = document.createElement("div");
           div.className = "comment";
-          div.innerHTML = `
-            ${c.author.username}: ${c.content}
-            ${
-              user && user._id === c.author._id
-                ? `<button onclick="deleteComment('${c._id}', '${postId}')" style="margin-left:10px;color:red;background:none;border:none;cursor:pointer">🗑️</button>`
-                : ""
-            }
-          `;
+          div.innerHTML = `${c.author.username}: ${c.content}`;
           container.appendChild(div);
         });
-      }
-
-      async function deleteComment(commentId, postId) {
-        if (!confirm("Delete comment?")) return;
-        const res = await fetch(`${API}/comments/${commentId}`, {
-          method: "DELETE",
-        });
-        const data = await res.json();
-        if (data.error) return alert("Delete error: " + data.error);
-        loadComments(postId);
       }
 
       async function toggleFollow() {
         const user = JSON.parse(localStorage.getItem("user"));
         if (!user) return alert("Please log in");
 
-        const targetUsername = prompt("Enter username to follow/unfollow:");
-        if (!targetUsername || targetUsername === user.username)
+        const username = prompt("Enter username to follow/unfollow:");
+        if (!username || username === user.username)
           return alert("Invalid username");
 
-        try {
-          const resUser = await fetch(`${API}/auth/user/${targetUsername}`);
-          const target = await resUser.json();
-          if (target.error) return alert("User not found");
+        const res = await fetch(`${API}/auth/user/${username}`);
+        const target = await res.json();
+        if (target.error) return alert("User not found");
 
-          const resFollow = await fetch(`${API}/follow`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ follower: user._id, following: target._id }),
-          });
+        const followRes = await fetch(`${API}/follow`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ follower: user._id, following: target._id }),
+        });
 
-          const data = await resFollow.json();
-          if (data.error) return alert("Follow error: " + data.error);
-          alert(
-            data.unfollowed
-              ? `Unfollowed ${target.username}`
-              : `Followed ${target.username}`
-          );
-        } catch (err) {
-          alert("Error: " + err.message);
-        }
+        const data = await followRes.json();
+        if (data.error) return alert("Follow error: " + data.error);
+        alert(
+          data.unfollowed
+            ? `Unfollowed ${target.username}`
+            : `Followed ${target.username}`
+        );
       }
 
       if (localStorage.getItem("user")) {
