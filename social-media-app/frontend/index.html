@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Mini Social App</title>
-    <link rel="icon" href="/path/to/favicon.ico" />
+    <link rel="icon" href="/favicon.ico" />
 
     <style>
       body {
@@ -95,10 +95,7 @@
         font-size: 1rem;
       }
 
-<<<<<<< HEAD
       /* Delete buttons style */
-=======
->>>>>>> 211b727 (follow)
       .delete-btn {
         background: #e74c3c;
         margin-left: 10px;
@@ -106,7 +103,6 @@
 
       .delete-btn:hover {
         background: #c0392b;
-<<<<<<< HEAD
       }
 
       /* Responsive adjustments */
@@ -157,8 +153,6 @@
           max-height: 200px;
           object-fit: cover;
         }
-=======
->>>>>>> 211b727 (follow)
       }
     </style>
   </head>
@@ -182,10 +176,7 @@
         <input type="file" id="postImage" />
         <button onclick="addPost()">Post</button>
         <button onclick="logout()" class="delete-btn">Logout</button>
-<<<<<<< HEAD
-=======
         <button onclick="toggleFollow()">Follow User</button>
->>>>>>> 211b727 (follow)
       </div>
 
       <div id="posts"></div>
@@ -238,10 +229,6 @@
         document.getElementById("posts").innerHTML = "";
       }
 
-<<<<<<< HEAD
-      // Toggle post section vs auth section visibility
-=======
->>>>>>> 211b727 (follow)
       function showPostSection(show) {
         document.getElementById("post-section").style.display = show
           ? "block"
@@ -251,10 +238,6 @@
           : "block";
       }
 
-<<<<<<< HEAD
-      // Add post (with optional image), then update DOM immediately
-=======
->>>>>>> 211b727 (follow)
       async function addPost() {
         const user = JSON.parse(localStorage.getItem("user"));
         if (!user) return alert("Please log in");
@@ -276,66 +259,9 @@
         const post = await res.json();
         if (post.error) return alert("Post error: " + post.error);
 
-        // Clear inputs
         document.getElementById("postContent").value = "";
         document.getElementById("postImage").value = null;
 
-<<<<<<< HEAD
-        // Add post to top of list without full reload
-        prependPost(post, user);
-      }
-
-      // Prepend a post DOM element
-      function prependPost(p, user) {
-        const container = document.getElementById("posts");
-        const liked = p.likes?.includes(user?._id);
-        const div = document.createElement("div");
-        div.className = "post";
-        div.innerHTML = `
-          <strong>${user.username}</strong>: ${p.content}
-          ${
-            p.image
-              ? `<br><img src="https://social-media-app-5-j2kt.onrender.com/uploads/${p.image}">`
-              : ""
-          }
-          <div>
-            <button onclick="toggleLike('${p._id}')">${
-          liked ? "❤️ Unlike" : "🤍 Like"
-        } (0)</button>
-            <button onclick="deletePost('${
-              p._id
-            }')" class="delete-btn">🗑️ Delete</button>
-          </div>
-          <div class="comments" id="comments-${p._id}"></div>
-          <div class="comment-input">
-            <input type="text" id="comment-input-${
-              p._id
-            }" placeholder="Write a comment..." />
-            <button onclick="addComment('${p._id}')">Comment</button>
-          </div>
-        `;
-        container.prepend(div);
-      }
-
-      // Load all posts from backend and render
-      async function loadPosts() {
-        const user = JSON.parse(localStorage.getItem("user"));
-        const res = await fetch(`${API}/posts`);
-        const posts = await res.json();
-
-        const container = document.getElementById("posts");
-        container.innerHTML = "";
-
-        posts.forEach((p) => {
-          const liked = p.likes?.includes(user?._id);
-          const div = document.createElement("div");
-          div.className = "post";
-          div.innerHTML = `
-          <strong>${p.author.username}</strong>: ${p.content}
-          ${
-            p.image
-              ? `<br><img src="https://social-media-app-5-j2kt.onrender.com/uploads/${p.image}">`
-=======
         prependPost(post, user);
       }
 
@@ -349,29 +275,15 @@
           ${
             p.image
               ? `<br><img src="${API.replace("/api", "")}/uploads/${p.image}">`
->>>>>>> 211b727 (follow)
               : ""
           }
           <div>
             <button onclick="toggleLike('${p._id}')">${
-<<<<<<< HEAD
-            liked ? "❤️ Unlike" : "🤍 Like"
-          } (${p.likes.length})</button>
-            ${
-              user && user._id === p.author._id
-                ? `<button onclick="deletePost('${p._id}')" class="delete-btn">🗑️ Delete</button>`
-                : ""
-            }
-=======
           liked ? "❤️ Unlike" : "🤍 Like"
         } (0)</button>
-            <button onclick="editPost('${p._id}', \`${
-          p.content
-        }\`)">✏️ Edit</button>
             <button onclick="deletePost('${
               p._id
             }')" class="delete-btn">🗑️ Delete</button>
->>>>>>> 211b727 (follow)
           </div>
           <div class="comments" id="comments-${p._id}"></div>
           <div class="comment-input">
@@ -429,10 +341,6 @@
         });
       }
 
-<<<<<<< HEAD
-      // Toggle like / unlike
-=======
->>>>>>> 211b727 (follow)
       async function toggleLike(postId) {
         const user = JSON.parse(localStorage.getItem("user"));
         if (!user) return alert("Log in to like");
@@ -446,24 +354,6 @@
         const data = await res.json();
         if (data.error) return alert("Like error: " + data.error);
         loadPosts();
-<<<<<<< HEAD
-      }
-
-      // Delete a post
-      async function deletePost(postId) {
-        if (!confirm("Delete this post?")) return;
-
-        const res = await fetch(`${API}/posts/${postId}`, {
-          method: "DELETE",
-        });
-
-        const data = await res.json();
-        if (data.error) return alert("Delete error: " + data.error);
-        loadPosts();
-      }
-
-      // Add comment to post
-=======
       }
 
       async function deletePost(postId) {
@@ -495,7 +385,6 @@
         loadPosts();
       }
 
->>>>>>> 211b727 (follow)
       async function addComment(postId) {
         const user = JSON.parse(localStorage.getItem("user"));
         if (!user) return alert("Log in to comment");
@@ -517,10 +406,6 @@
         loadComments(postId);
       }
 
-<<<<<<< HEAD
-      // Load comments for a post
-=======
->>>>>>> 211b727 (follow)
       async function loadComments(postId) {
         const user = JSON.parse(localStorage.getItem("user"));
         const res = await fetch(`${API}/comments/post/${postId}`);
@@ -533,15 +418,6 @@
           const div = document.createElement("div");
           div.className = "comment";
           div.innerHTML = `
-<<<<<<< HEAD
-          ${c.author.username}: ${c.content}
-          ${
-            user && user._id === c.author._id
-              ? `<button onclick="deleteComment('${c._id}', '${postId}')" style="margin-left:10px;color:red;background:none;border:none;cursor:pointer">🗑️</button>`
-              : ""
-          }
-        `;
-=======
             ${c.author.username}: ${c.content}
             ${
               user && user._id === c.author._id
@@ -549,15 +425,10 @@
                 : ""
             }
           `;
->>>>>>> 211b727 (follow)
           container.appendChild(div);
         });
       }
 
-<<<<<<< HEAD
-      // Delete a comment
-=======
->>>>>>> 211b727 (follow)
       async function deleteComment(commentId, postId) {
         if (!confirm("Delete comment?")) return;
         const res = await fetch(`${API}/comments/${commentId}`, {
@@ -568,9 +439,6 @@
         loadComments(postId);
       }
 
-<<<<<<< HEAD
-      // On page load, check if user is logged in
-=======
       async function toggleFollow() {
         const user = JSON.parse(localStorage.getItem("user"));
         if (!user) return alert("Please log in");
@@ -602,7 +470,6 @@
         }
       }
 
->>>>>>> 211b727 (follow)
       if (localStorage.getItem("user")) {
         showPostSection(true);
         loadPosts();
