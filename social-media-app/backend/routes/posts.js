@@ -54,9 +54,9 @@ postRouter.put("/:id/like", async (req, res) => {
     const userId = req.body.userId;
 
     if (!post.likes.includes(userId)) {
-      post.likes.push(userId); 
+      post.likes.push(userId);
     } else {
-      post.likes = post.likes.filter((id) => id !== userId); 
+      post.likes = post.likes.filter((id) => id !== userId);
     }
 
     await post.save();
@@ -87,7 +87,7 @@ postRouter.delete("/:id", async (req, res) => {
 });
 
 // ✅ Update post (text and optional new image)
-postRouter.put("/:id", upload.single("image"), async (req, res) => {
+postRouter.put("/update/:id", upload.single("image"), async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ error: "Post not found" });
@@ -108,7 +108,6 @@ postRouter.put("/:id", upload.single("image"), async (req, res) => {
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
-
 });
 
 export default postRouter;
