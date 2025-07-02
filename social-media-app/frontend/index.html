@@ -174,7 +174,7 @@
         <input type="file" id="postImage" />
         <button onclick="addPost()">Post</button>
         <button onclick="logout()" class="delete-btn">Logout</button>
-        <button onclick="toggleFollow()">Follow User</button>
+        <!-- Removed Follow User button, replaced with per-post follow buttons -->
       </div>
 
       <div id="posts"></div>
@@ -266,24 +266,28 @@
       function prependPost(p, user) {
         const container = document.getElementById("posts");
         const liked = p.likes?.includes(user?._id);
+
         const div = document.createElement("div");
         div.className = "post";
         div.innerHTML = `
-          <strong>${user.username}</strong>: ${p.content}
+          <strong>${p.author.username}</strong>: ${p.content}
           ${
             p.image
               ? `<br><img src="${API.replace("/api", "")}/uploads/${
                   p.image
-                }" onclick="editPost('${p._id}', \`${p.content}\`)">`
+                }" onclick="editImage('${p._id}')">`
               : ""
           }
           <div>
             <button onclick="toggleLike('${p._id}')">${
           liked ? "❤️ Unlike" : "🤍 Like"
-        } (0)</button>
-            <button onclick="deletePost('${
-              p._id
-            }')" class="delete-btn">🗑️ Delete</button>
+        } (${p.likes.length || 0})</button>
+            ${
+              user._id !== p.author._id
+                ? `<button onclick="followUser('${p.author._id}')" >➕ Follow</button>`
+                : `<button onclick="editPost('${p._id}', \`${p.content}\`)">✏️ Edit</button>
+                   <button onclick="deletePost('${p._id}')" class="delete-btn">🗑️ Delete</button>`
+            }
           </div>
           <div class="comments" id="comments-${p._id}"></div>
           <div class="comment-input">
@@ -294,6 +298,8 @@
           </div>
         `;
         container.prepend(div);
+
+        loadComments(p._id);
       }
 
       async function loadPosts() {
@@ -316,7 +322,7 @@
                     p.image
                   }" ${
                     user._id === p.author._id
-                      ? `onclick="editPost('${p._id}', \`${p.content}\`)"`
+                      ? `onclick="editImage('${p._id}')"`
                       : ""
                   }>`
                 : ""
@@ -326,10 +332,10 @@
             liked ? "❤️ Unlike" : "🤍 Like"
           } (${p.likes.length})</button>
               ${
-                user._id === p.author._id
-                  ? `<button onclick="editPost('${p._id}', \`${p.content}\`)">✏️ Edit</button>
+                user._id !== p.author._id
+                  ? `<button onclick="followUser('${p.author._id}')">➕ Follow</button>`
+                  : `<button onclick="editPost('${p._id}', \`${p.content}\`)">✏️ Edit</button>
                      <button onclick="deletePost('${p._id}')" class="delete-btn">🗑️ Delete</button>`
-                  : ""
               }
             </div>
             <div class="comments" id="comments-${p._id}"></div>
@@ -345,6 +351,27 @@
         });
       }
 
+      // Follow user without prompt, using the passed userId (author id)
+      async function followUser(userId) {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user) return alert("Please log in");
+
+        try {
+          const resFollow = await fetch(`${API}/follow`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ follower: user._id, following: userId }),
+          });
+
+          const data = await resFollow.json();
+          if (data.error) return alert("Follow error: " + data.error);
+          alert(data.unfollowed ? `Unfollowed user` : `Followed user`);
+        } catch (err) {
+          alert("Error: " + err.message);
+        }
+      }
+
+      // Edit post content + image (keep old prompt but user can cancel)
       async function editPost(postId, currentContent) {
         const newContent = prompt("Edit your post:", currentContent);
         if (newContent === null) return;
@@ -366,6 +393,31 @@
 
           const data = await res.json();
           if (data.error) return alert("Edit failed: " + data.error);
+          loadPosts();
+        };
+
+        fileInput.click();
+      }
+
+      // Edit image only, no text editing
+      async function editImage(postId) {
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/*";
+        fileInput.onchange = async () => {
+          const formData = new FormData();
+          formData.append("content", ""); // keep content empty to avoid overwriting
+          if (fileInput.files[0]) {
+            formData.append("image", fileInput.files[0]);
+          }
+
+          const res = await fetch(`${API}/posts/${postId}`, {
+            method: "PUT",
+            body: formData,
+          });
+
+          const data = await res.json();
+          if (data.error) return alert("Edit image failed: " + data.error);
           loadPosts();
         };
 
@@ -433,33 +485,6 @@
           div.innerHTML = `${c.author.username}: ${c.content}`;
           container.appendChild(div);
         });
-      }
-
-      async function toggleFollow() {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (!user) return alert("Please log in");
-
-        const username = prompt("Enter username to follow/unfollow:");
-        if (!username || username === user.username)
-          return alert("Invalid username");
-
-        const res = await fetch(`${API}/auth/user/${username}`);
-        const target = await res.json();
-        if (target.error) return alert("User not found");
-
-        const followRes = await fetch(`${API}/follow`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ follower: user._id, following: target._id }),
-        });
-
-        const data = await followRes.json();
-        if (data.error) return alert("Follow error: " + data.error);
-        alert(
-          data.unfollowed
-            ? `Unfollowed ${target.username}`
-            : `Followed ${target.username}`
-        );
       }
 
       if (localStorage.getItem("user")) {
