@@ -372,12 +372,10 @@
         const newContent = prompt("Edit your post:", currentContent);
         if (!newContent) return;
 
-        const formData = new FormData();
-        formData.append("content", newContent);
-
         const res = await fetch(`${API}/posts/${postId}`, {
           method: "PUT",
-          body: formData,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: newContent }),
         });
 
         const data = await res.json();
