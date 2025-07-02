@@ -84,6 +84,33 @@ postRouter.delete("/:id", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+<<<<<<< HEAD
+=======
+});
+
+// ✅ Update post (text and optional new image)
+postRouter.put("/:id", upload.single("image"), async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ error: "Post not found" });
+
+    // If new image provided, delete old image
+    if (req.file && post.image) {
+      const oldImagePath = path.resolve("uploads", post.image);
+      fs.unlink(oldImagePath, (err) => {
+        if (err) console.warn("Old image delete failed:", err.message);
+      });
+    }
+
+    post.content = req.body.content || post.content;
+    post.image = req.file ? req.file.filename : post.image;
+
+    await post.save();
+    res.json(post);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+>>>>>>> 211b727 (follow)
 });
 
 export default postRouter;
