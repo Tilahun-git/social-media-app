@@ -16,11 +16,10 @@ const app = express();
 // CORS configuration
 app.use(
   cors({
-<<<<<<< HEAD
-    origin: "https://social-media-app-6-ls9a.onrender.com", // For production, replace "*" with your frontend URL, e.g. "https://your-frontend.onrender.com"
-=======
-    origin: "https://social-media-app-6-ls9a.onrender.com",
->>>>>>> 211b727 (follow)
+
+    origin: "https://social-media-app-6-ls9a.onrender.com", 
+
+
   })
 );
 
