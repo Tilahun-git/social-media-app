@@ -375,7 +375,7 @@
         const formData = new FormData();
         formData.append("content", newContent); // Only content is being updated
 
-        const res = await fetch(`${API}/posts/update/${postId}`, {
+        const res = await fetch(`${API}/posts/${postId}`, {
           method: "PUT",
           body: formData, // Do NOT set Content-Type manually for FormData
         });

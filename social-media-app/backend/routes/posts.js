@@ -87,7 +87,7 @@ postRouter.delete("/:id", async (req, res) => {
 });
 
 // ✅ Update post (text and optional new image)
-postRouter.put("/update/:id", upload.single("image"), async (req, res) => {
+postRouter.put("/:id", upload.single("image"), async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ error: "Post not found" });
