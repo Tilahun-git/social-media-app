@@ -8,6 +8,7 @@ import postRouter from "./routes/posts.js";
 import commentRouter from "./routes/comments.js";
 import followRouter from "./routes/follows.js";
 import { Server } from "socket.io";
+import FollowRouter from "./routes/follows.js";
 
 // Load environment variables
 dotenv.config();
@@ -17,10 +18,7 @@ const app = express();
 // CORS configuration
 app.use(
   cors({
-
-    origin: "https://social-media-app-6-ls9a.onrender.com", 
-
-
+    origin: "https://social-media-app-6-ls9a.onrender.com",
   })
 );
 
@@ -34,11 +32,8 @@ app.get("/", (req, res) => {
   res.send("You are live");
 });
 
-
-
-
 const io = new Server(server, {
-  cors: { origin: "*" }
+  cors: { origin: "*" },
 });
 
 io.on("connection", (socket) => {
@@ -68,7 +63,7 @@ mongoose
 app.use("/api/auth", userRouter);
 app.use("/api/posts", postRouter);
 app.use("/api/comments", commentRouter);
-app.use("/api/follows", followRouter);
+app.use("/api/follow", FollowRouter);
 
 // Start server
 const PORT = process.env.PORT || 3000;

@@ -362,11 +362,20 @@
             body: JSON.stringify({ follower: user._id, following: userId }),
           });
 
-          const data = await resFollow.json();
+          // Try to parse JSON response, fallback to text if error
+          let data;
+          try {
+            data = await resFollow.json();
+          } catch (e) {
+            const text = await resFollow.text();
+            console.error("Response not JSON from /follow:", text);
+            return alert("Follow error: server returned invalid response");
+          }
+
           if (data.error) return alert("Follow error: " + data.error);
           alert(data.unfollowed ? `Unfollowed user` : `Followed user`);
         } catch (err) {
-          alert("Error: " + err.message);
+          alert("Fetch error: " + err.message);
         }
       }
 
