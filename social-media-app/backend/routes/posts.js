@@ -54,9 +54,9 @@ postRouter.put("/:id/like", async (req, res) => {
     const userId = req.body.userId;
 
     if (!post.likes.includes(userId)) {
-      post.likes.push(userId); // Like
+      post.likes.push(userId); 
     } else {
-      post.likes = post.likes.filter((id) => id !== userId); // Dislike (remove like)
+      post.likes = post.likes.filter((id) => id !== userId); 
     }
 
     await post.save();
@@ -84,8 +84,6 @@ postRouter.delete("/:id", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-<<<<<<< HEAD
-=======
 });
 
 // ✅ Update post (text and optional new image)
@@ -110,7 +108,7 @@ postRouter.put("/:id", upload.single("image"), async (req, res) => {
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
->>>>>>> 211b727 (follow)
+
 });
 
 export default postRouter;
