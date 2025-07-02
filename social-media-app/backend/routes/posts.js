@@ -86,20 +86,20 @@ postRouter.delete("/:id", async (req, res) => {
   }
 });
 
-// ✅ Update post (text and optional new image)
 postRouter.put("/:id", upload.single("image"), async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ error: "Post not found" });
 
-    // If new image provided, delete old image
+    // If a new image is uploaded, delete old one
     if (req.file && post.image) {
       const oldImagePath = path.resolve("uploads", post.image);
       fs.unlink(oldImagePath, (err) => {
-        if (err) console.warn("Old image delete failed:", err.message);
+        if (err) console.warn("Image delete failed:", err.message);
       });
     }
 
+    // Update fields
     post.content = req.body.content || post.content;
     post.image = req.file ? req.file.filename : post.image;
 

@@ -178,7 +178,9 @@
         <button onclick="logout()" class="delete-btn">Logout</button>
         <button onclick="toggleFollow()">Follow User</button>
       </div>
-
+      <div>
+        <input type="file" id="editImage" style="display: none" />
+      </div>
       <div id="posts"></div>
     </div>
 
@@ -372,17 +374,33 @@
         const newContent = prompt("Edit your post:", currentContent);
         if (!newContent) return;
 
-        const formData = new FormData();
-        formData.append("content", newContent); // Only content is being updated
+        // Create a temporary file input for selecting a new image
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/*";
 
-        const res = await fetch(`${API}/posts/${postId}`, {
-          method: "PUT",
-          body: formData, // Do NOT set Content-Type manually for FormData
-        });
+        // Ask user to pick a file
+        fileInput.onchange = async () => {
+          const formData = new FormData();
+          formData.append("content", newContent);
 
-        const data = await res.json();
-        if (data.error) return alert("Edit failed: " + data.error);
-        loadPosts();
+          const selectedImage = fileInput.files[0];
+          if (selectedImage) {
+            formData.append("image", selectedImage);
+          }
+
+          const res = await fetch(`${API}/posts/${postId}`, {
+            method: "PUT",
+            body: formData,
+          });
+
+          const data = await res.json();
+          if (data.error) return alert("Edit failed: " + data.error);
+          loadPosts();
+        };
+
+        // Trigger file picker (user can cancel)
+        fileInput.click();
       }
 
       async function addComment(postId) {
