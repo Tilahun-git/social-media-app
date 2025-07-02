@@ -362,12 +362,15 @@
             body: JSON.stringify({ follower: user._id, following: userId }),
           });
 
-          // Try to parse JSON response, fallback to text if error
+          // Clone the response so you can parse it safely
+          const resClone = resFollow.clone();
+
           let data;
           try {
             data = await resFollow.json();
-          } catch (e) {
-            const text = await resFollow.text();
+          } catch (jsonErr) {
+            // JSON parse failed, try to get text from cloned response
+            const text = await resClone.text();
             console.error("Response not JSON from /follow:", text);
             return alert("Follow error: server returned invalid response");
           }
