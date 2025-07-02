@@ -22,4 +22,26 @@ FollowRouter.post("/", async (req, res) => {
   }
 });
 
+// Get number of followers for a user
+FollowRouter.get("/followers/:userId", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const count = await Follow.countDocuments({ following: userId });
+    res.json({ followersCount: count });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Get number of users a user is following
+FollowRouter.get("/following/:userId", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const count = await Follow.countDocuments({ follower: userId });
+    res.json({ followingCount: count });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 export default FollowRouter;

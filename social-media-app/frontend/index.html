@@ -174,7 +174,6 @@
         <input type="file" id="postImage" />
         <button onclick="addPost()">Post</button>
         <button onclick="logout()" class="delete-btn">Logout</button>
-        <!-- Removed Follow User button, replaced with per-post follow buttons -->
       </div>
 
       <div id="posts"></div>
@@ -351,7 +350,7 @@
         });
       }
 
-      // Follow user without prompt, using the passed userId (author id)
+      // Follow/unfollow user by userId (author of post)
       async function followUser(userId) {
         const user = JSON.parse(localStorage.getItem("user"));
         if (!user) return alert("Please log in");
@@ -371,7 +370,7 @@
         }
       }
 
-      // Edit post content + image (keep old prompt but user can cancel)
+      // Edit post text + image
       async function editPost(postId, currentContent) {
         const newContent = prompt("Edit your post:", currentContent);
         if (newContent === null) return;
@@ -399,14 +398,14 @@
         fileInput.click();
       }
 
-      // Edit image only, no text editing
+      // Edit image only (no text prompt)
       async function editImage(postId) {
         const fileInput = document.createElement("input");
         fileInput.type = "file";
         fileInput.accept = "image/*";
         fileInput.onchange = async () => {
           const formData = new FormData();
-          formData.append("content", ""); // keep content empty to avoid overwriting
+          formData.append("content", ""); // empty so content is not overwritten
           if (fileInput.files[0]) {
             formData.append("image", fileInput.files[0]);
           }
