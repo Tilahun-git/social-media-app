@@ -7,6 +7,7 @@ import userRouter from "./routes/auth.js";
 import postRouter from "./routes/posts.js";
 import commentRouter from "./routes/comments.js";
 import followRouter from "./routes/follows.js";
+import { Server } from "socket.io";
 
 // Load environment variables
 dotenv.config();
@@ -31,6 +32,27 @@ app.use("/uploads", express.static("uploads"));
 // Simple root endpoint
 app.get("/", (req, res) => {
   res.send("You are live");
+});
+
+
+
+
+const io = new Server(server, {
+  cors: { origin: "*" }
+});
+
+io.on("connection", (socket) => {
+  console.log("User connected", socket.id);
+
+  // When a new message is created (e.g. post/comment)
+  // emit it to all clients or specific clients
+  socket.on("newMessage", (message) => {
+    io.emit("messageReceived", message); // broadcast to all
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected", socket.id);
+  });
 });
 
 // Connect to MongoDB
