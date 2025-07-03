@@ -1,4 +1,4 @@
-const API = "https://social-media-app-5-j2kt.onrender.com/api";
+const API = "https://social-media-app-4-45pu.onrender.com/api";
 let allPosts = [];
 
 async function register() {
