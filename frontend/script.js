@@ -98,8 +98,8 @@ function filterPosts() {
 
   const filtered = allPosts.filter(
     (p) =>
-      p.author.username.toLowerCase().includes(query) ||
-      p.content.toLowerCase().includes(query)
+      p.author?.username?.toLowerCase().includes(query) ||
+      p.content?.toLowerCase().includes(query)
   );
 
   filtered.forEach((p) => {
@@ -107,21 +107,23 @@ function filterPosts() {
     const div = document.createElement("div");
     div.className = "post";
     div.innerHTML = `
-      <strong>${p.author.username}</strong>: ${p.content}
+      <strong>${p.author?.username || "Unknown"}</strong>: ${p.content}
       ${
         p.image
           ? `<br><img src="${API.replace("/api", "")}/uploads/${p.image}" ${
-              user._id === p.author._id ? `onclick="editImage('${p._id}')"` : ""
+              user._id === p.author?._id
+                ? `onclick="editImage('${p._id}')"`
+                : ""
             }>`
           : ""
       }
       <div>
         <button onclick="toggleLike('${p._id}')">${
       liked ? "❤️ Unlike" : "🤍 Like"
-    } (${p.likes.length})</button>
+    } (${p.likes?.length || 0})</button>
         ${
-          user._id !== p.author._id
-            ? `<button onclick="followUser('${p.author._id}')">➕ Follow</button>`
+          user._id !== p.author?._id
+            ? `<button onclick="followUser('${p.author?._id}')">➕ Follow</button>`
             : `<button onclick="editPost('${p._id}', \`${p.content}\`)">✏️ Edit</button>
                <button onclick="deletePost('${p._id}')" class="delete-btn">🗑️ Delete</button>`
         }
@@ -162,7 +164,7 @@ async function followUser(userId) {
 
     if (data.error) return alert("Follow error: " + data.error);
     alert(data.unfollowed ? `Unfollowed user` : `Followed user`);
-    loadPosts(); // update posts
+    loadPosts();
   } catch (err) {
     alert("Fetch error: " + err.message);
   }
@@ -201,7 +203,7 @@ async function editImage(postId) {
   fileInput.accept = "image/*";
   fileInput.onchange = async () => {
     const formData = new FormData();
-    formData.append("content", ""); // keep existing text
+    formData.append("content", ""); // keep existing content
     if (fileInput.files[0]) {
       formData.append("image", fileInput.files[0]);
     }
@@ -282,7 +284,6 @@ async function loadComments(postId) {
   });
 }
 
-// Auto-login on page load if user is in localStorage
 if (localStorage.getItem("user")) {
   showPostSection(true);
   loadPosts();
