@@ -16,7 +16,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://social-media-app-6-ls9a.onrender.com",
+    origin: "https://social-media-apps.onrender.com",
   })
 );
 
