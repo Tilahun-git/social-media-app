@@ -45,15 +45,9 @@ function logout() {
 }
 
 function showPostSection(show) {
-  document.getElementById("post-section").style.display = show
-    ? "block"
-    : "none";
-  document.getElementById("auth-section").style.display = show
-    ? "none"
-    : "block";
-  document.getElementById("searchInput").style.display = show
-    ? "block"
-    : "none";
+  document.getElementById("post-section").style.display = show ? "block" : "none";
+  document.getElementById("auth-section").style.display = show ? "none" : "block";
+  document.getElementById("searchInput").style.display = show ? "block" : "none";
 }
 
 async function addPost() {
@@ -84,13 +78,36 @@ async function addPost() {
 }
 
 async function loadPosts() {
-  const user = JSON.parse(localStorage.getItem("user"));
   const res = await fetch(`${API}/posts`);
   allPosts = await res.json();
-  filterPosts();
+  await filterPosts();
 }
 
-function filterPosts() {
+async function getFollowerCount(userId) {
+  try {
+    const res = await fetch(`${API}/follow/followers/${userId}`);
+    if (!res.ok) throw new Error("Failed to fetch follower count");
+    const data = await res.json();
+    return data.followersCount || 0;
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+}
+
+async function getFollowingCount(userId) {
+  try {
+    const res = await fetch(`${API}/follow/following/${userId}`);
+    if (!res.ok) throw new Error("Failed to fetch following count");
+    const data = await res.json();
+    return data.followingCount || 0;
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+}
+
+async function filterPosts() {
   const query = document.getElementById("searchInput").value.toLowerCase();
   const user = JSON.parse(localStorage.getItem("user"));
   const container = document.getElementById("posts");
@@ -102,19 +119,23 @@ function filterPosts() {
       p.content?.toLowerCase().includes(query)
   );
 
-  filtered.forEach((p) => {
+  for (const p of filtered) {
+    const followersCount = await getFollowerCount(p.author?._id);
+    const followingCount = await getFollowingCount(p.author?._id);
     const liked = p.likes?.includes(user?._id);
+
     const div = document.createElement("div");
     div.className = "post";
     div.innerHTML = `
-      <strong>${p.author?.username || "Unknown"}</strong>: ${p.content}
+      <strong>${p.author?.username || "Unknown"}</strong>
+      <small style="color: gray; font-size: 0.85em;">
+        &nbsp;&nbsp;(${followersCount} followers, ${followingCount} following)
+      </small>: ${p.content}
       ${
         p.image
           ? `<br><img src="${API.replace("/api", "")}/uploads/${p.image}" ${
-              user._id === p.author?._id
-                ? `onclick="editImage('${p._id}')"`
-                : ""
-            }>`
+              user._id === p.author?._id ? `onclick="editImage('${p._id}')"` : ""
+            } style="max-width: 200px; max-height: 200px;">`
           : ""
       }
       <div>
@@ -130,15 +151,13 @@ function filterPosts() {
       </div>
       <div class="comments" id="comments-${p._id}"></div>
       <div class="comment-input">
-        <input type="text" id="comment-input-${
-          p._id
-        }" placeholder="Write a comment..." />
+        <input type="text" id="comment-input-${p._id}" placeholder="Write a comment..." />
         <button onclick="addComment('${p._id}')">Comment</button>
       </div>
     `;
     container.appendChild(div);
     loadComments(p._id);
-  });
+  }
 }
 
 async function followUser(userId) {
@@ -152,15 +171,7 @@ async function followUser(userId) {
       body: JSON.stringify({ follower: user._id, following: userId }),
     });
 
-    const resClone = resFollow.clone();
-    let data;
-    try {
-      data = await resFollow.json();
-    } catch {
-      const text = await resClone.text();
-      console.error("Response not JSON from /follow:", text);
-      return alert("Follow error: server returned invalid response");
-    }
+    const data = await resFollow.json();
 
     if (data.error) return alert("Follow error: " + data.error);
     alert(data.unfollowed ? `Unfollowed user` : `Followed user`);
@@ -170,6 +181,7 @@ async function followUser(userId) {
   }
 }
 
+// The rest of your existing functions for editPost, editImage, deletePost, toggleLike, addComment, loadComments:
 async function editPost(postId, currentContent) {
   const newContent = prompt("Edit your post:", currentContent);
   if (newContent === null) return;
@@ -284,6 +296,7 @@ async function loadComments(postId) {
   });
 }
 
+// Auto-login on page load
 if (localStorage.getItem("user")) {
   showPostSection(true);
   loadPosts();

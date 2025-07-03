@@ -44,4 +44,16 @@ FollowRouter.get("/following/:userId", async (req, res) => {
   }
 });
 
+async function getFollowerCount(userId) {
+  try {
+    const res = await fetch(`${API}/follow/followers/${userId}`);
+    if (!res.ok) throw new Error("Failed to fetch follower count");
+    const data = await res.json();
+    return data.followersCount || 0;
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+}
+
 export default FollowRouter;
