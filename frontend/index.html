@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mini Social App</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="/favicon.ico" />
+  </head>
+  <body>
+    <h1>Mini Social App</h1>
+    <div class="container">
+      <div id="auth-section">
+        <input id="username" placeholder="Username" />
+        <input id="password" type="password" placeholder="Password" />
+        <button onclick="register()">Register</button>
+        <button onclick="login()">Login</button>
+      </div>
+
+      <hr />
+
+      <div id="post-section" style="display: none">
+        <textarea id="postContent" placeholder="What's on your mind?"></textarea>
+        <input type="file" id="postImage" />
+        <button onclick="addPost()">Post</button>
+        <button onclick="logout()" class="delete-btn">Logout</button>
+      </div>
+
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="Search by username or post content..."
+        oninput="filterPosts()"
+        style="margin-top: 10px; display: none"
+      />
+
+      <div id="posts"></div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
