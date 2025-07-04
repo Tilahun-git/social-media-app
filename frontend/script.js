@@ -1,4 +1,4 @@
-const API = "http://localhost:5000/api";
+const API = "http://localhost:3000/api";
 let allPosts = [];
 
 async function register() {
