@@ -17,7 +17,7 @@ const app = express();
 // ✅ Allowed frontend origins
 const allowedOrigins = [
   "http://localhost:3000", // for local dev
-  "https://social-media-apps.onrender.com", // your actual frontend
+  "http://localhost:5000", // your actual frontend
 ];
 
 // ✅ CORS setup to allow requests from allowedOrigins
